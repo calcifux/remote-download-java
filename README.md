@@ -1,5 +1,6 @@
 # remote-download
 
+[![build](https://github.com/calcifux/remote-download-java/actions/workflows/build.yml/badge.svg)](https://github.com/calcifux/remote-download-java/actions/workflows/build.yml)
 [![JitPack](https://jitpack.io/v/calcifux/remote-download-java.svg)](https://jitpack.io/#calcifux/remote-download-java)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)

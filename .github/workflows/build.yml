@@ -1,0 +1,44 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: build (JDK ${{ matrix.java }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '21' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Validate Maven config
+        run: mvn -B validate --no-transfer-progress
+
+      - name: Build all modules
+        run: mvn -B clean install -DskipTests --no-transfer-progress
+
+      - name: Show installed artifacts
+        run: |
+          echo "===== Artifacts in local repository ====="
+          ls -la ~/.m2/repository/com/github/calcifux/ 2>/dev/null || true
+          echo ""
+          echo "===== Module sizes ====="
+          find . -name '*-1.0.0.jar' -not -path '*/target/maven-archiver/*' \
+                -exec ls -la {} \; 2>/dev/null

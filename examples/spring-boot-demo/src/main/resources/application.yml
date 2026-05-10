@@ -1,0 +1,11 @@
+server:
+  port: 8080
+
+remote-download:
+  enabled: true
+  chunk-size: 8192
+  default-disposition: attachment
+
+logging:
+  level:
+    com.github.calcifux.remotedownload: DEBUG
