@@ -31,8 +31,16 @@ jobs:
       - name: Validate Maven config
         run: mvn -B validate --no-transfer-progress
 
-      - name: Build all modules
-        run: mvn -B clean install -DskipTests --no-transfer-progress
+      - name: Build all modules (runs tests)
+        run: mvn -B clean install --no-transfer-progress
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: '**/target/surefire-reports/'
+          retention-days: 7
 
       - name: Show installed artifacts
         run: |

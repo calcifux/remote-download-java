@@ -43,6 +43,9 @@
     <sshd.version>2.12.1</sshd.version>
     <commons-net.version>3.10.0</commons-net.version>
 
+    <!-- Testing -->
+    <wiremock.version>3.3.1</wiremock.version>
+
     <!-- Quarkus / Jakarta -->
     <jakarta.cdi.version>4.0.1</jakarta.cdi.version>
     <jakarta.ws.rs.version>3.1.0</jakarta.ws.rs.version>
@@ -112,6 +115,14 @@
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
         <version>${commons-net.version}</version>
+      </dependency>
+
+      <!-- WireMock (HTTP stubs for tests) -->
+      <dependency>
+        <groupId>org.wiremock</groupId>
+        <artifactId>wiremock-standalone</artifactId>
+        <version>${wiremock.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <!-- Jakarta + MicroProfile (Quarkus) -->
