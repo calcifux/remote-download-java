@@ -1,5 +1,11 @@
 # remote-download
 
+[![JitPack](https://jitpack.io/v/calcifux/remote-download-java.svg)](https://jitpack.io/#calcifux/remote-download-java)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
+
+> Léelo en otro idioma: [English](README.md)
+
 > **Pipe de bytes** desde una fuente remota (HTTP autenticado, S3, Azure Blob, GCS, ...) hacia el response HTTP de tu backend, **sin pasar por disco**, para que el navegador del usuario dispare la descarga.
 >
 > Inspirado en `response()->streamDownload(...)` de Laravel y en el patrón `Guzzle::request($url, ['stream' => true])` de PHP.
@@ -199,14 +205,14 @@ Para una app Spring Boot que descarga archivos públicos:
 
 ```xml
 <dependency>
-  <groupId>com.github.calcifux</groupId>
+  <groupId>com.github.calcifux.remote-download-java</groupId>
   <artifactId>remote-download-core</artifactId>
-  <version>1.0.0</version>
+  <version>v1.0.0</version>
 </dependency>
 <dependency>
-  <groupId>com.github.calcifux</groupId>
+  <groupId>com.github.calcifux.remote-download-java</groupId>
   <artifactId>remote-download-spring</artifactId>
-  <version>1.0.0</version>
+  <version>v1.0.0</version>
 </dependency>
 ```
 
@@ -619,9 +625,9 @@ public class ContractDownloadController {
 
 ```xml
 <dependency>
-  <groupId>com.github.calcifux</groupId>
+  <groupId>com.github.calcifux.remote-download-java</groupId>
   <artifactId>remote-download-spring</artifactId>
-  <version>1.0.0</version>
+  <version>v1.0.0</version>
 </dependency>
 ```
 
@@ -650,9 +656,9 @@ public class FilesController {
 
 ```xml
 <dependency>
-  <groupId>com.github.calcifux</groupId>
+  <groupId>com.github.calcifux.remote-download-java</groupId>
   <artifactId>remote-download-quarkus</artifactId>
-  <version>1.0.0</version>
+  <version>v1.0.0</version>
 </dependency>
 ```
 
