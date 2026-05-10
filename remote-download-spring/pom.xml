@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+            http://maven.apache.org/POM/4.0.0
+            https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.github.calcifux</groupId>
+    <artifactId>remote-download-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>remote-download-spring</artifactId>
+  <packaging>jar</packaging>
+
+  <name>remote-download-spring</name>
+  <description>
+    Spring Boot Starter for remote-download: auto-configuration,
+    ConfigurationProperties bindings and a Laravel-style static facade.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.github.calcifux</groupId>
+      <artifactId>remote-download-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+    </dependency>
+
+    <!-- StreamingResponseBody requiere la API de Servlet -->
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+</project>

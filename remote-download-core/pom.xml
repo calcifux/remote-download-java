@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+            http://maven.apache.org/POM/4.0.0
+            https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.github.calcifux</groupId>
+    <artifactId>remote-download-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>remote-download-core</artifactId>
+  <packaging>jar</packaging>
+
+  <name>remote-download-core</name>
+  <description>
+    Lightweight core of remote-download. Pure-Java HTTP based on the JDK 21
+    java.net.http.HttpClient. The only external dependency is SLF4J.
+    Works in any framework — Spring, Quarkus, plain Servlet, plain Java.
+  </description>
+
+  <dependencies>
+
+    <!-- Logging API (no concrete implementation) -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <!-- Lombok — compile-time only -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+</project>

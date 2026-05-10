@@ -1,0 +1,24 @@
+# Build
+target/
+**/target/
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Documentos personales (no se suben al repo)
+ROADMAP.md
+BUILD.md

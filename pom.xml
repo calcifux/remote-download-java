@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+            http://maven.apache.org/POM/4.0.0
+            https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.github.calcifux</groupId>
+  <artifactId>remote-download-parent</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+
+  <name>remote-download-parent</name>
+  <description>
+    Java swiss-army knife for streaming remote resources (HTTP, S3, Azure Blob, GCS)
+    across any framework (Spring, Quarkus, plain Servlet, plain Java).
+  </description>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.2.5</version>
+    <relativePath/>
+  </parent>
+
+  <properties>
+    <java.version>21</java.version>
+    <maven.compiler.release>21</maven.compiler.release>
+
+    <lombok.version>1.18.36</lombok.version>
+
+    <!-- HTTP enterprise -->
+    <httpclient5.version>5.3.1</httpclient5.version>
+
+    <!-- Cloud SDKs -->
+    <aws.sdk.version>2.25.40</aws.sdk.version>
+    <azure.storage.blob.version>12.25.4</azure.storage.blob.version>
+    <gcs.version>2.40.1</gcs.version>
+
+    <!-- File-transfer protocols -->
+    <sshd.version>2.12.1</sshd.version>
+    <commons-net.version>3.10.0</commons-net.version>
+
+    <!-- Quarkus / Jakarta -->
+    <jakarta.cdi.version>4.0.1</jakarta.cdi.version>
+    <jakarta.ws.rs.version>3.1.0</jakarta.ws.rs.version>
+    <microprofile.config.version>3.1</microprofile.config.version>
+  </properties>
+
+  <modules>
+    <module>remote-download-core</module>
+    <module>remote-download-apache</module>
+    <module>remote-download-s3</module>
+    <module>remote-download-azure</module>
+    <module>remote-download-gcs</module>
+    <module>remote-download-sftp</module>
+    <module>remote-download-ftp</module>
+    <module>remote-download-spring</module>
+    <module>remote-download-quarkus</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Modulos internos -->
+      <dependency>
+        <groupId>com.github.calcifux</groupId>
+        <artifactId>remote-download-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- Apache HttpClient 5 -->
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>${httpclient5.version}</version>
+      </dependency>
+
+      <!-- AWS SDK BOM -->
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- Azure Storage Blob -->
+      <dependency>
+        <groupId>com.azure</groupId>
+        <artifactId>azure-storage-blob</artifactId>
+        <version>${azure.storage.blob.version}</version>
+      </dependency>
+
+      <!-- Google Cloud Storage -->
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>google-cloud-storage</artifactId>
+        <version>${gcs.version}</version>
+      </dependency>
+
+      <!-- Apache Mina SSHD (SFTP) -->
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-sftp</artifactId>
+        <version>${sshd.version}</version>
+      </dependency>
+
+      <!-- Apache Commons Net (FTP / FTPS) -->
+      <dependency>
+        <groupId>commons-net</groupId>
+        <artifactId>commons-net</artifactId>
+        <version>${commons-net.version}</version>
+      </dependency>
+
+      <!-- Jakarta + MicroProfile (Quarkus) -->
+      <dependency>
+        <groupId>jakarta.enterprise</groupId>
+        <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        <version>${jakarta.cdi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>${jakarta.ws.rs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.microprofile.config</groupId>
+        <artifactId>microprofile-config-api</artifactId>
+        <version>${microprofile.config.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <release>${java.version}</release>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
