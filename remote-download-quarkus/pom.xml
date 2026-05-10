@@ -55,6 +55,28 @@
       <version>${lombok.version}</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!--
+      JAX-RS API alone has no RuntimeDelegate implementation, so Response.ok(...)
+      cannot be built at runtime. Jersey provides one via META-INF/services.
+    -->
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-common</artifactId>
+      <version>3.1.5</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
