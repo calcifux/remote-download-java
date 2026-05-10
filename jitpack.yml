@@ -1,0 +1,9 @@
+# JitPack build configuration
+# Forces Java 21 (default would be Java 8 and the build would fail on records / pattern matching / etc.)
+jdk:
+  - openjdk21
+
+# Skip tests during JitPack build to keep it fast.
+# Tests run in CI / local, not on every JitPack consumer fetch.
+install:
+  - mvn clean install -DskipTests --no-transfer-progress
