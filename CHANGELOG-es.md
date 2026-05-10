@@ -7,6 +7,36 @@ Todos los cambios relevantes de este proyecto están documentados en este archiv
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/),
 y el proyecto usa de manera laxa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.0.1] — 2026-05-10
+
+### Agregado
+
+- Suite de pruebas para los módulos `apache`, `spring` y `quarkus`:
+  - `remote-download-apache`: 9 pruebas con JUnit 5 + WireMock que cubren
+    reintentos, autenticación bearer y básica, headers personalizados,
+    manejo de 4xx / 5xx y checksum.
+  - `remote-download-spring`: 14 pruebas que cubren la utility class
+    `Downloads`, el bean inyectable `RemoteDownloadService` y la
+    auto-configuración de Spring Boot (`ApplicationContextRunner` para
+    el binding de propiedades, el toggle de habilitado y
+    `@ConditionalOnMissingBean`).
+  - `remote-download-quarkus`: 10 pruebas para la utility class
+    `Downloads` de JAX-RS y el bean CDI `RemoteDownloadJaxRsService`,
+    incluyendo la codificación RFC 5987 UTF-8 para `filename*`.
+- El workflow de CI corre ahora el reactor completo con pruebas en cada
+  push, pull request y tag — **50 pruebas verde** entre `core`, `apache`,
+  `spring` y `quarkus`.
+
+### Notas
+
+- Sin cambios incompatibles. Actualización directa desde 1.0.0.
+- Los módulos de cloud / file-transfer (`s3`, `azure`, `gcs`, `sftp`,
+  `ftp`) todavía no incluyen pruebas — están planeadas para una
+  versión menor futura usando Testcontainers (LocalStack, Azurite,
+  atmoz/sftp, alpine-ftp-server).
+
+[1.0.1]: https://github.com/calcifux/remote-download-java/releases/tag/v1.0.1
+
 ## [1.0.0] — 2026-05-10
 
 ### Agregado

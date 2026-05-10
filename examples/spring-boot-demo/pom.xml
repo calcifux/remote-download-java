@@ -27,7 +27,7 @@
 
   <properties>
     <java.version>21</java.version>
-    <remote-download.version>v1.0.0</remote-download.version>
+    <remote-download.version>v1.0.1</remote-download.version>
   </properties>
 
   <repositories>
