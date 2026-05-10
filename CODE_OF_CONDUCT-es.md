@@ -65,11 +65,8 @@ presencial o en línea.
 ## Aplicación
 
 Las instancias de comportamiento abusivo, acosador o inaceptable de otro
-modo podrán ser reportadas de manera privada a través de los
-**[GitHub Security Advisories del proyecto](https://github.com/calcifux/remote-download-java/security/advisories/new)**.
-Selecciona "Report a vulnerability" y usa el cuerpo del reporte para
-describir el incidente — el canal es privado y solo es visible para los
-mantenedores del proyecto.
+modo podrán ser reportadas al mantenedor del proyecto a través de su
+perfil de GitHub: **[@calcifux](https://github.com/calcifux)**.
 
 Todas las quejas serán evaluadas e investigadas de una manera puntual y justa.
 
