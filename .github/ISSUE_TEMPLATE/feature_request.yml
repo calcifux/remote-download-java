@@ -1,0 +1,67 @@
+name: Feature request
+description: Suggest a new feature, origin or framework adapter.
+title: "[feat] <short summary>"
+labels: [ "enhancement", "triage" ]
+body:
+
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing a feature. The clearer the use case, the easier
+        it is to evaluate and ship.
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: What are you trying to do? What's the real-world scenario?
+      placeholder: |
+        I want to stream files from Backblaze B2 through my Spring Boot
+        backend, similar to how this library does for S3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Current workaround
+      description: How are you solving this today (if at all)?
+
+  - type: textarea
+    id: proposed-api
+    attributes:
+      label: Proposed API
+      description: |
+        A rough sketch of the API you'd like to see. Don't worry about
+        polish — we'll iterate.
+      render: java
+      placeholder: |
+        DownloadOrigin src = B2Origin.builder()
+            .bucket("my-bucket")
+            .key("file.pdf")
+            .credentials(keyId, applicationKey)
+            .build();
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Feature type
+      options:
+        - New origin (e.g. Dropbox, B2, FTP variant)
+        - New framework adapter (e.g. Micronaut, Helidon)
+        - Core API enhancement
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Are you willing to contribute?
+      description: |
+        Check the box if you'd be willing to send a Pull Request for this.
+      options:
+        - label: Yes, I can submit a PR
+        - label: I can help with testing
+        - label: I just want to suggest the idea

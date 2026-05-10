@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/calcifux/remote-download-java#readme
+    about: Read the README first — most questions are answered there.
+  - name: JitPack distribution
+    url: https://jitpack.io/#calcifux/remote-download-java
+    about: Check the published versions and how to consume them.

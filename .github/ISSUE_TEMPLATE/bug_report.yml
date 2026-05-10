@@ -1,0 +1,83 @@
+name: Bug report
+description: Report a bug or unexpected behavior in remote-download-java.
+title: "[bug] <short summary>"
+labels: [ "bug", "triage" ]
+body:
+
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill out the
+        sections below — the more concrete the report, the faster the fix.
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Affected module
+      description: Which module is failing?
+      options:
+        - remote-download-core
+        - remote-download-apache
+        - remote-download-s3
+        - remote-download-azure
+        - remote-download-gcs
+        - remote-download-sftp
+        - remote-download-ftp
+        - remote-download-spring
+        - remote-download-quarkus
+        - other / multiple
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Tag, commit hash or `main-SNAPSHOT`.
+      placeholder: v1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: java
+    attributes:
+      label: Java runtime
+      description: Output of `java -version` from the host that runs the library.
+      placeholder: openjdk 21.0.2
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: |
+        The smallest builder + call that exhibits the bug. Use code blocks.
+      render: java
+      placeholder: |
+        DownloadOrigin src = HttpOrigin.url("https://...").bearer(token).build();
+        RemoteDownload.from(src).writeTo(out);
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include stack trace if any.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Network setup, proxy, OS, container runtime, etc.
