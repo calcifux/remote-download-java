@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history so SonarCloud can blame each line to the right commit.
+          fetch-depth: 0
 
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
@@ -28,11 +31,29 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: maven
 
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
       - name: Validate Maven config
         run: mvn -B validate --no-transfer-progress
 
-      - name: Build all modules (runs tests)
+      - name: Build all modules (runs tests + coverage report)
         run: mvn -B clean install --no-transfer-progress
+
+      - name: SonarCloud analysis
+        # Only run on main pushes and PRs from the same repo — secrets are not
+        # available to PRs from forks, the step would fail noisily.
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+              --no-transfer-progress
 
       - name: Upload test reports on failure
         if: failure()
@@ -47,6 +68,7 @@ jobs:
           echo "===== Artifacts in local repository ====="
           ls -la ~/.m2/repository/com/github/calcifux/ 2>/dev/null || true
           echo ""
-          echo "===== Module sizes ====="
-          find . -name '*-1.0.0.jar' -not -path '*/target/maven-archiver/*' \
+          echo "===== Module jars ====="
+          find . -name 'remote-download-*-*.jar' -not -path '*/target/maven-archiver/*' \
+                -not -name '*-sources.jar' -not -name '*-javadoc.jar' \
                 -exec ls -la {} \; 2>/dev/null

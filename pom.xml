@@ -49,6 +49,25 @@
     <!-- Coverage -->
     <jacoco.version>0.8.12</jacoco.version>
 
+    <!--
+      SonarCloud (SonarQube Cloud) — wired in via GitHub Actions.
+      The Sonar Maven plugin reads these from `sonar.*` properties; the GitHub
+      Actions workflow then passes the projectKey and the SONAR_TOKEN secret.
+
+      sonar.coverage.jacoco.xmlReportPaths points the analyzer at every
+      module's JaCoCo XML report so the coverage metric reflects the
+      multi-module reactor.
+    -->
+    <sonar.organization>calcifux</sonar.organization>
+    <sonar.projectKey>calcifux_remote-download-java</sonar.projectKey>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.coverage.jacoco.xmlReportPaths>
+      ${project.basedir}/../remote-download-core/target/site/jacoco/jacoco.xml,
+      ${project.basedir}/../remote-download-apache/target/site/jacoco/jacoco.xml,
+      ${project.basedir}/../remote-download-spring/target/site/jacoco/jacoco.xml,
+      ${project.basedir}/../remote-download-quarkus/target/site/jacoco/jacoco.xml
+    </sonar.coverage.jacoco.xmlReportPaths>
+
     <!-- Quarkus / Jakarta -->
     <jakarta.cdi.version>4.0.1</jakarta.cdi.version>
     <jakarta.ws.rs.version>3.1.0</jakarta.ws.rs.version>

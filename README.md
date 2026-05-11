@@ -2,6 +2,8 @@
 
 [![build](https://github.com/calcifux/remote-download-java/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/calcifux/remote-download-java/actions/workflows/build.yml)
 [![JitPack](https://jitpack.io/v/calcifux/remote-download-java.svg)](https://jitpack.io/#calcifux/remote-download-java)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=calcifux_remote-download-java&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=calcifux_remote-download-java)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=calcifux_remote-download-java&metric=coverage)](https://sonarcloud.io/summary/new_code?id=calcifux_remote-download-java)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
 
