@@ -67,6 +67,20 @@
       ${project.basedir}/../remote-download-spring/target/site/jacoco/jacoco.xml,
       ${project.basedir}/../remote-download-quarkus/target/site/jacoco/jacoco.xml
     </sonar.coverage.jacoco.xmlReportPaths>
+    <!--
+      Modules without tests today are excluded from the coverage metric so the
+      dashboard reflects the suite that actually exists. They are NOT excluded
+      from analysis — bugs, smells and hotspots still apply. The day each one
+      grows its own test suite, drop it from this list.
+    -->
+    <sonar.coverage.exclusions>
+      remote-download-s3/**,
+      remote-download-azure/**,
+      remote-download-gcs/**,
+      remote-download-sftp/**,
+      remote-download-ftp/**,
+      examples/**
+    </sonar.coverage.exclusions>
 
     <!-- Quarkus / Jakarta -->
     <jakarta.cdi.version>4.0.1</jakarta.cdi.version>
