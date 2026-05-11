@@ -7,6 +7,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project loosely follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] — 2026-05-11
+
+### Added
+
+- **JaCoCo coverage** wired into the parent pom — every module produces
+  `target/jacoco.exec` and `target/site/jacoco/index.html` on `mvn verify`.
+- **Quality gate** enforcing 95% LINE / 70% BRANCH per BUNDLE. Modules
+  without tests skip the gate automatically; the day they get their first
+  test, the gate kicks in.
+- `lombok.config` at the project root with
+  `lombok.addLombokGeneratedAnnotation = true` so JaCoCo filters
+  Lombok-produced bytecode (`@Getter`, `@Builder`, etc.) out of coverage.
+- **45 new tests** raising the suite to **95 tests verde** across `core`
+  (43), `apache` (20), `spring` (17) and `quarkus` (15) modules.
+
+### Changed
+
+- `remote-download-quarkus`: `encodeFilename` rewritten to delegate to
+  `URLEncoder.encode(...)` instead of looping byte-by-byte over the
+  RFC 5987 unreserved set. Same output, simpler code, 12 fewer synthetic
+  branches in the coverage report.
+
+### Fixed
+
+- `remote-download-apache`: `HttpHeaderUtils.parseFilename` was stripping
+  surrounding quotes BEFORE cutting at the parameter separator `;`. The
+  bug surfaced on headers like
+  `Content-Disposition: attachment; filename="x.pdf"; size=42`, which
+  returned `"x.pdf"` (with literal quotes) instead of `x.pdf`. The order
+  of operations is now: cut at `;` → strip RFC 5987 prefix → strip quotes.
+
+### Coverage baseline
+
+```
+Module                Line %   Branch %   Method %
+─────────────────────────────────────────────────────
+remote-download-core   100.0%    96.4%     100.0%
+remote-download-apache  99.1%    95.0%      95.0%
+remote-download-spring 100.0%    80.0%     100.0%
+remote-download-quarkus 100.0%    75.0%     100.0%
+─────────────────────────────────────────────────────
+TOTAL                   99.7%    91.9%      98.9%
+```
+
+[1.0.2]: https://github.com/calcifux/remote-download-java/releases/tag/v1.0.2
+
 ## [1.0.1] — 2026-05-10
 
 ### Added

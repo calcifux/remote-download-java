@@ -180,4 +180,73 @@ class ApacheHttpOriginTest {
         assertThat(result.checksum())
                 .contains("2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824");
     }
+
+    @Test
+    void exposesEmptyOptionalsWhenResponseLacksMetadataHeaders(WireMockRuntimeInfo info) throws Exception {
+        stubFor(get("/bare").willReturn(aResponse().withStatus(200).withBody("ok")));
+
+        var src = ApacheHttpOrigin.url(info.getHttpBaseUrl() + "/bare").build();
+        try (RemoteContent content = RemoteDownload.from(src).fetch()) {
+            // WireMock auto-adds Content-Type / Content-Length so we focus on the
+            // path the suite did not exercise: filename absent.
+            assertThat(content.filename()).isEmpty();
+        }
+    }
+
+    @Test
+    void handlesResponseWithoutBody(WireMockRuntimeInfo info) throws Exception {
+        // 204 No Content — entity == null branch.
+        stubFor(get("/empty").willReturn(aResponse().withStatus(204)));
+
+        var src = ApacheHttpOrigin.url(info.getHttpBaseUrl() + "/empty").build();
+        var out = new ByteArrayOutputStream();
+        WriteResult result = RemoteDownload.from(src).writeTo(out);
+
+        assertThat(result.getBytesTransferred()).isZero();
+    }
+
+    @Test
+    void wrapsTransportFailureAsIOException() {
+        // Closed port → ConnectException, exercises the catch in execute() that
+        // closes the client and re-throws.
+        var src = ApacheHttpOrigin.url("http://localhost:1/file")
+                .retries(0)
+                .connectTimeout(java.time.Duration.ofMillis(200))
+                .build();
+
+        assertThatThrownBy(() -> RemoteDownload.from(src).writeTo(new ByteArrayOutputStream()))
+                .isInstanceOf(java.io.IOException.class);
+    }
+
+    @Test
+    void executesWithProxyConfigured() {
+        // Routes through an unreachable proxy — fails fast, but the
+        // `if (proxy != null)` branch in open() executes before the error.
+        var src = ApacheHttpOrigin.url("http://localhost:1/file")
+                .proxy("127.0.0.1", 1)
+                .retries(0)
+                .connectTimeout(java.time.Duration.ofMillis(200))
+                .build();
+
+        assertThatThrownBy(() -> RemoteDownload.from(src).writeTo(new ByteArrayOutputStream()))
+                .isInstanceOf(java.io.IOException.class);
+    }
+
+    @Test
+    void executesWithNtlmCredentialsConfigured(WireMockRuntimeInfo info) throws Exception {
+        // WireMock does not speak NTLM; what we exercise is the
+        // `if (credentialsProvider != null)` branch — the credentials provider
+        // is wired into the client builder, the request is sent, the server
+        // returns 200 because it does not require auth.
+        stubFor(get("/file").willReturn(aResponse().withStatus(200).withBody("ok")));
+
+        var src = ApacheHttpOrigin.url(info.getHttpBaseUrl() + "/file")
+                .ntlm("CORP", "ada", "secret")
+                .build();
+
+        var out = new ByteArrayOutputStream();
+        RemoteDownload.from(src).writeTo(out);
+
+        assertThat(out.toString()).isEqualTo("ok");
+    }
 }

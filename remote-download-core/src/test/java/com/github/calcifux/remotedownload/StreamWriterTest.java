@@ -117,6 +117,17 @@ class StreamWriterTest {
         assertThat(result.bytesPerSecond()).isZero();
     }
 
+    @Test
+    void blankAlgorithmIsTreatedAsNoChecksum() throws Exception {
+        // Non-null but blank algorithm → short-circuit, no MessageDigest is created.
+        WriteResult result = StreamWriter.copy(
+                new ByteArrayInputStream("hello".getBytes()),
+                new ByteArrayOutputStream(),
+                1024, null, null, "   ");
+
+        assertThat(result.getChecksumHex()).isNull();
+    }
+
     // ---------- helpers ----------
 
     private static class RecordingListener implements ProgressListener {

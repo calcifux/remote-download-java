@@ -1,5 +1,6 @@
 package com.github.calcifux.remotedownload.quarkus.core;
 
+import com.github.calcifux.remotedownload.DownloadOrigin;
 import com.github.calcifux.remotedownload.WriteResult;
 import com.github.calcifux.remotedownload.quarkus.support.InMemoryOrigin;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -10,8 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class RemoteDownloadJaxRsServiceTest {
 
@@ -93,5 +96,26 @@ class RemoteDownloadJaxRsServiceTest {
 
         assertThat(out.toString()).isEqualTo("checksum me");
         assertThat(result.getBytesTransferred()).isEqualTo(11L);
+    }
+
+    @Test
+    void attachmentPropagatesIOExceptionFromOrigin() {
+        DownloadOrigin broken = InMemoryOrigin.failing("service-origin-down");
+        Response response = service.attachment(broken, "x.bin");
+        StreamingOutput body = (StreamingOutput) response.getEntity();
+
+        assertThatThrownBy(() -> body.write(new ByteArrayOutputStream()))
+                .isInstanceOf(IOException.class)
+                .hasMessage("service-origin-down");
+    }
+
+    @Test
+    void streamPropagatesIOExceptionFromOrigin() {
+        DownloadOrigin broken = InMemoryOrigin.failing("service-stream-down");
+        Response response = service.stream(broken);
+        StreamingOutput body = (StreamingOutput) response.getEntity();
+
+        assertThatThrownBy(() -> body.write(new ByteArrayOutputStream()))
+                .isInstanceOf(IOException.class);
     }
 }

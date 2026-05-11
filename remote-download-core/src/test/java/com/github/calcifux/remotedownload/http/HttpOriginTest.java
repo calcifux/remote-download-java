@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Base64;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -153,5 +155,74 @@ class HttpOriginTest {
 
         assertThat(result.checksum())
                 .contains("2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824");
+    }
+
+    @Test
+    void parseFilenameReturnsNullWhenHeaderHasNoFilenameParam() {
+        // Direct exercise of the package-private parser — keeps the regex
+        // false-path honest. The WireMock-backed tests cannot send a
+        // Content-Disposition without a filename param (they always include
+        // one), so cover it here.
+        assertThat(HttpOrigin.parseFilename("attachment")).isNull();
+        assertThat(HttpOrigin.parseFilename("inline; size=42")).isNull();
+        assertThat(HttpOrigin.parseFilename(null)).isNull();
+    }
+
+    @Test
+    void exposesEmptyOptionalsWhenResponseLacksMetadataHeaders(WireMockRuntimeInfo info) throws Exception {
+        // No Content-Type, no Content-Length, no Content-Disposition.
+        stubFor(get("/bare").willReturn(aResponse().withStatus(200).withBody("ok")));
+
+        var src = HttpOrigin.url(info.getHttpBaseUrl() + "/bare").build();
+        try (RemoteContent content = RemoteDownload.from(src).fetch()) {
+            assertThat(content.contentType()).isEmpty();
+            assertThat(content.contentLength()).isEmpty();
+            assertThat(content.filename()).isEmpty();
+        }
+    }
+
+    @Test
+    void builderSettersAreChainable(WireMockRuntimeInfo info) throws Exception {
+        stubFor(get("/file").willReturn(aResponse().withStatus(200).withBody("ok")));
+
+        var src = HttpOrigin.url(info.getHttpBaseUrl() + "/file")
+                .connectTimeout(Duration.ofSeconds(5))
+                .requestTimeout(Duration.ofSeconds(15))
+                .header("X-Custom", "v")
+                .build();
+
+        WriteResult result = RemoteDownload.from(src).writeTo(new ByteArrayOutputStream());
+
+        assertThat(result.getBytesTransferred()).isEqualTo(2L);
+    }
+
+    @Test
+    void interruptedThreadDuringSendThrowsRemoteDownloadException(WireMockRuntimeInfo info) throws Exception {
+        // Stub a response that takes a minute — we'll interrupt before then.
+        stubFor(get("/hang").willReturn(aResponse()
+                .withFixedDelay(60_000)
+                .withStatus(200)
+                .withBody("never")));
+
+        var src = HttpOrigin.url(info.getHttpBaseUrl() + "/hang")
+                .requestTimeout(Duration.ofSeconds(60))
+                .build();
+
+        AtomicReference<Throwable> caught = new AtomicReference<>();
+        Thread worker = new Thread(() -> {
+            try {
+                RemoteDownload.from(src).writeTo(new ByteArrayOutputStream());
+            } catch (Throwable t) {
+                caught.set(t);
+            }
+        });
+        worker.start();
+        Thread.sleep(300);   // give it time to enter client.send()
+        worker.interrupt();
+        worker.join(5_000);
+
+        assertThat(caught.get())
+                .isInstanceOf(RemoteDownloadException.class)
+                .hasMessageContaining("Interrupted");
     }
 }

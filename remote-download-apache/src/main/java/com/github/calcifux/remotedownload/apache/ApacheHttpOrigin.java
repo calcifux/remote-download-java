@@ -313,13 +313,18 @@ public class ApacheHttpOrigin implements DownloadOrigin {
             int eq = contentDisposition.indexOf('=', idx);
             if (eq < 0) return null;
             String value = contentDisposition.substring(eq + 1).trim();
+
+            // Cut at the first parameter separator BEFORE touching quotes /
+            // RFC 5987 prefix — Content-Disposition can chain extra params
+            // after the filename, e.g. `filename="x.pdf"; size=42`.
+            int semi = value.indexOf(';');
+            if (semi >= 0) value = value.substring(0, semi).trim();
+
             if (value.startsWith("UTF-8''")) value = value.substring(7);
             if (value.startsWith("\"") && value.endsWith("\"")) {
                 value = value.substring(1, value.length() - 1);
             }
-            int semi = value.indexOf(';');
-            if (semi >= 0) value = value.substring(0, semi);
-            return value.trim();
+            return value;
         }
     }
 }

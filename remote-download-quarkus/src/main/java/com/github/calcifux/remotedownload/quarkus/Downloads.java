@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -140,20 +141,12 @@ public final class Downloads {
     }
 
     /**
-     * RFC 5987 percent-encoding for the {@code filename*} parameter, restricted
-     * to the unreserved set {@code A-Z a-z 0-9 - _ . ~}.
+     * RFC 5987 percent-encoding for the {@code filename*} parameter. Delegates
+     * to {@link URLEncoder}; the only required twist is that {@code URLEncoder}
+     * encodes a space as {@code +} (form-encoded), while RFC 5987 expects
+     * {@code %20}.
      */
     private static String encodeFilename(String filename) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : filename.getBytes(StandardCharsets.UTF_8)) {
-            int v = b & 0xFF;
-            if ((v >= 'A' && v <= 'Z') || (v >= 'a' && v <= 'z') || (v >= '0' && v <= '9')
-                    || v == '-' || v == '_' || v == '.' || v == '~') {
-                sb.append((char) v);
-            } else {
-                sb.append(String.format("%%%02X", v));
-            }
-        }
-        return sb.toString();
+        return URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
     }
 }

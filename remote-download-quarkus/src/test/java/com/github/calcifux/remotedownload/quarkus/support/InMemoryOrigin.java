@@ -37,4 +37,12 @@ public final class InMemoryOrigin implements DownloadOrigin {
                 .filename(filename)
                 .build();
     }
+
+    /**
+     * Builds an origin whose {@link DownloadOrigin#open()} throws — useful to
+     * exercise the error-handling branches of the response wiring.
+     */
+    public static DownloadOrigin failing(String message) {
+        return () -> { throw new java.io.IOException(message); };
+    }
 }

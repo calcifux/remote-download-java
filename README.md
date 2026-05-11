@@ -208,12 +208,12 @@ For a Spring Boot app downloading public files:
 <dependency>
   <groupId>com.github.calcifux.remote-download-java</groupId>
   <artifactId>remote-download-core</artifactId>
-  <version>v1.0.1</version>
+  <version>v1.0.2</version>
 </dependency>
 <dependency>
   <groupId>com.github.calcifux.remote-download-java</groupId>
   <artifactId>remote-download-spring</artifactId>
-  <version>v1.0.1</version>
+  <version>v1.0.2</version>
 </dependency>
 ```
 
@@ -628,7 +628,7 @@ public class ContractDownloadController {
 <dependency>
   <groupId>com.github.calcifux.remote-download-java</groupId>
   <artifactId>remote-download-spring</artifactId>
-  <version>v1.0.1</version>
+  <version>v1.0.2</version>
 </dependency>
 ```
 
@@ -659,7 +659,7 @@ public class FilesController {
 <dependency>
   <groupId>com.github.calcifux.remote-download-java</groupId>
   <artifactId>remote-download-quarkus</artifactId>
-  <version>v1.0.1</version>
+  <version>v1.0.2</version>
 </dependency>
 ```
 
