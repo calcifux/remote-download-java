@@ -220,7 +220,14 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.6.0</version>
+        <!--
+          1.5.0 is the last release that still works with the older Maven
+          shipped on JitPack's build VM (~3.5). Newer plugin versions
+          (1.6.x+) bump the required Maven to 3.6.3 and the JitPack build
+          breaks with "requires Maven version 3.6.3". When JitPack moves
+          forward we can bump to 1.6.x. Tracked in ROADMAP.
+        -->
+        <version>1.5.0</version>
         <configuration>
           <updatePomFile>true</updatePomFile>
           <flattenMode>resolveCiFriendliesOnly</flattenMode>
