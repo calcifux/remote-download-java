@@ -110,8 +110,9 @@ public class ApacheHttpOrigin implements DownloadOrigin {
     public RemoteContent open() throws IOException {
         log.debug("[ApacheHttpOrigin] GET {}", uri);
 
-        // Connect timeout lives on the connection manager since HttpClient 5.4;
-        // response timeout remains on RequestConfig (per-request scope).
+        // Connect timeout is configured on the connection manager in modern
+        // versions of the Apache HTTP client; response timeout remains on
+        // RequestConfig because it is per-request scope.
         PoolingHttpClientConnectionManager connectionManager =
                 PoolingHttpClientConnectionManagerBuilder.create()
                         .setDefaultConnectionConfig(ConnectionConfig.custom()
