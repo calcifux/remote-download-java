@@ -7,6 +7,60 @@ Todos los cambios relevantes de este proyecto están documentados en este archiv
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/),
 y el proyecto usa de manera laxa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.0.3] — 2026-05-11
+
+### Agregado
+
+- **Integración con SonarCloud** en el workflow de CI. El scanner de
+  Maven sube cobertura + análisis en cada push y pull request. El quality
+  gate es el `Sonar way` (default), actualmente **Passed**.
+- **Quality gate con JaCoCo `check`** en el parent pom — rompe el build
+  de Maven si algún BUNDLE con pruebas cae bajo 95% LINE / 70% BRANCH.
+  Los módulos sin pruebas saltean automáticamente.
+- **Dos badges nuevos** en los READMEs: `Quality Gate Status` y `Coverage`
+  con valores en vivo desde SonarCloud.
+- **2 pruebas nuevas** llevando la suite a **97 pruebas verde**:
+  - `core/HttpOriginTest.parseFilenameReturnsNullWhenHeaderHasNoFilenameParam`
+  - `core/StreamWriterTest.blankAlgorithmIsTreatedAsNoChecksum`
+
+### Cambiado
+
+- **`remote-download-apache`**: migrado a la API moderna de Apache
+  HttpClient 5 — `ConnectionConfig` + `PoolingHttpClientConnectionManagerBuilder`
+  para connect timeout, `HttpClientBuilder.setProxy(...)` para routing y
+  `executeOpen(...)` para la request. Elimina 3 de 4 warnings de
+  deprecation. El 4to (`NTCredentials` constructor de 5 args) queda
+  marcado con `@SuppressWarnings("deprecation")` pendiente del bump a
+  HC 5.4.
+- **`remote-download-quarkus`**: `encodeFilename` ahora delega en
+  `URLEncoder.encode(...).replace("+", "%20")`. Mismo output RFC 5987,
+  una línea, sin branches por rango ASCII.
+- **Cleanup lambdas** en `apache`, `ftp`, `gcs` y `sftp` ahora hacen
+  log en nivel `DEBUG` en vez de tragarse las excepciones del close.
+- **`HttpHeaderUtils`** en `apache` ahora es `final` con constructor
+  privado (higiene de utility class).
+- **`RemoteDownloadService.resolveContentType(DownloadOrigin)`**
+  simplificado a `defaultContentType()` — se quitó el parámetro que no
+  se usaba; el método es privado y el cuerpo retornaba una constante.
+
+### Corregido
+
+- **`apache/HttpHeaderUtils.parseFilename`**: quitaba las comillas ANTES
+  de cortar en el separador de parámetros, así que headers tipo
+  `Content-Disposition: attachment; filename="x.pdf"; size=42` devolvían
+  `"x.pdf"` (con comillas literales) en lugar de `x.pdf`. El nuevo
+  orden es: cortar en `;` → quitar prefijo RFC 5987 → quitar comillas.
+
+### Calidad
+
+- **Issues abiertos en SonarCloud: 0** (51 auto-arreglados por los
+  refactors arriba, 8 revisados y aceptados con justificación documentada
+  — ver `ROADMAP.md` para el rationale por regla).
+- **Cobertura**: 98.9% LINE / 91.9% BRANCH / 100% METHOD (JaCoCo local).
+  Agregada en SonarCloud: 97.5%.
+
+[1.0.3]: https://github.com/calcifux/remote-download-java/releases/tag/v1.0.3
+
 ## [1.0.2] — 2026-05-11
 
 ### Agregado

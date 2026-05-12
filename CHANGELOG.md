@@ -7,6 +7,59 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project loosely follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] — 2026-05-11
+
+### Added
+
+- **SonarCloud integration** wired into the CI workflow. The Maven scanner
+  uploads coverage + analysis on every push and pull request. Quality gate
+  is `Sonar way` (default), currently **Passed**.
+- **Quality gate enforced via JaCoCo `check`** in the parent pom — fails
+  the Maven build if any tested BUNDLE drops below 95% LINE / 70% BRANCH.
+  Modules without tests are skipped automatically.
+- **Two new badges** in the READMEs: `Quality Gate Status` and `Coverage`
+  pulling live values from SonarCloud.
+- **2 new unit tests** raising the suite to **97 tests verde**:
+  - `core/HttpOriginTest.parseFilenameReturnsNullWhenHeaderHasNoFilenameParam`
+  - `core/StreamWriterTest.blankAlgorithmIsTreatedAsNoChecksum`
+
+### Changed
+
+- **`remote-download-apache`**: migrated to the modern Apache HttpClient 5
+  API — `ConnectionConfig` + `PoolingHttpClientConnectionManagerBuilder`
+  for connect timeouts, `HttpClientBuilder.setProxy(...)` for routing, and
+  `executeOpen(...)` for the request. Removes 3 of 4 deprecation warnings.
+  The 4th (`NTCredentials` 5-arg ctor) is tracked for the next HC 5.4 bump
+  with `@SuppressWarnings("deprecation")`.
+- **`remote-download-quarkus`**: `encodeFilename` now delegates to
+  `URLEncoder.encode(...).replace("+", "%20")`. Same RFC 5987 output,
+  one line, no per-byte ASCII range branches.
+- **Cleanup lambdas** in `apache`, `ftp`, `gcs`, `sftp` now log at
+  `DEBUG` level instead of silently swallowing the close exceptions.
+- **`HttpHeaderUtils`** in `apache` is now `final` with a private
+  constructor (utility class hygiene).
+- **`RemoteDownloadService.resolveContentType(DownloadOrigin)`** simplified
+  to `defaultContentType()` — the unused parameter was removed; the method
+  is private and the body returned a constant.
+
+### Fixed
+
+- **`apache/HttpHeaderUtils.parseFilename`**: was stripping surrounding
+  quotes BEFORE cutting at the parameter separator, so headers like
+  `Content-Disposition: attachment; filename="x.pdf"; size=42` returned
+  `"x.pdf"` (with literal quotes) instead of `x.pdf`. The order is now:
+  cut at `;` → strip RFC 5987 prefix → strip quotes.
+
+### Code quality
+
+- **SonarCloud open issues: 0** (51 auto-fixed by the refactors above,
+  8 reviewed and accepted with documented justification — see
+  `ROADMAP.md` for the per-rule rationale).
+- **Coverage**: 98.9% LINE / 91.9% BRANCH / 100% METHOD (local JaCoCo).
+  SonarCloud aggregated: 97.5%.
+
+[1.0.3]: https://github.com/calcifux/remote-download-java/releases/tag/v1.0.3
+
 ## [1.0.2] — 2026-05-11
 
 ### Added
