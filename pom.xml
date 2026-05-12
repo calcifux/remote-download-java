@@ -30,7 +30,7 @@
          Bump THIS line on every release; child modules inherit via ${revision}.
          flatten-maven-plugin replaces the variable with the literal value
          before install/deploy so JitPack publishes POMs with real version. -->
-    <revision>1.0.3</revision>
+    <revision>1.0.4</revision>
 
     <java.version>21</java.version>
     <maven.compiler.release>21</maven.compiler.release>

@@ -7,6 +7,24 @@ Todos los cambios relevantes de este proyecto están documentados en este archiv
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/),
 y el proyecto usa de manera laxa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.0.4] — 2026-05-11
+
+### Corregido
+
+- **Infraestructura de build**: se baja `flatten-maven-plugin` de `1.6.0`
+  a `1.5.0`. La línea 1.6.x requiere Maven 3.6.3+, lo cual rompió el
+  build de v1.0.3 en JitPack (su VM de build trae un Maven más viejo).
+  La 1.5.0 es compatible con Maven 3.0+ y ofrece la misma funcionalidad
+  para nuestra configuración `flattenMode=resolveCiFriendliesOnly`.
+
+### Notas
+
+- Sin cambios de código respecto a v1.0.3. Actualización directa.
+- Es el primer release que JitPack publica correctamente con la nueva
+  estructura de POM single-source-of-truth basada en `${revision}`.
+
+[1.0.4]: https://github.com/calcifux/remote-download-java/releases/tag/v1.0.4
+
 ## [1.0.3] — 2026-05-11
 
 ### Agregado
