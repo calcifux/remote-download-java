@@ -106,10 +106,24 @@ public class FtpOrigin implements DownloadOrigin {
                         "FTP cannot open " + path + ": " + reply);
             }
 
+            // Cleanup is best-effort — the body has already been delivered, so a
+            // failure to finalise the FTP session cannot be surfaced to the caller.
             Runnable cleanup = () -> {
-                try { ftp.completePendingCommand(); } catch (IOException ignored) {}
-                try { ftp.logout(); } catch (IOException ignored) {}
-                try { ftp.disconnect(); } catch (IOException ignored) {}
+                try {
+                    ftp.completePendingCommand();
+                } catch (IOException e) {
+                    log.debug("[FtpOrigin] ignored failure completing pending command", e);
+                }
+                try {
+                    ftp.logout();
+                } catch (IOException e) {
+                    log.debug("[FtpOrigin] ignored failure logging out", e);
+                }
+                try {
+                    ftp.disconnect();
+                } catch (IOException e) {
+                    log.debug("[FtpOrigin] ignored failure disconnecting", e);
+                }
             };
 
             return RemoteContent.builder()
@@ -119,7 +133,11 @@ public class FtpOrigin implements DownloadOrigin {
                     .build();
 
         } catch (IOException e) {
-            try { ftp.disconnect(); } catch (IOException ignored) {}
+            try {
+                ftp.disconnect();
+            } catch (IOException ignored) {
+                log.debug("[FtpOrigin] ignored failure disconnecting after open() failed", ignored);
+            }
             throw e;
         }
     }

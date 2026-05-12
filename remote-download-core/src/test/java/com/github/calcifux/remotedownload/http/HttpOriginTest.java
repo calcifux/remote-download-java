@@ -39,7 +39,7 @@ class HttpOriginTest {
 
         WriteResult result = RemoteDownload.from(src).writeTo(out);
 
-        assertThat(out.toString()).isEqualTo("PDF bytes");
+        assertThat(out).hasToString("PDF bytes");
         assertThat(result.getBytesTransferred()).isEqualTo(9L);
     }
 

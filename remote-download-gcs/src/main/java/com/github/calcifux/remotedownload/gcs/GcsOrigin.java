@@ -97,9 +97,20 @@ public class GcsOrigin implements DownloadOrigin {
                 .contentType(blob.getContentType())
                 .contentLength(blob.getSize())
                 .filename(extractFilename(objectName))
+                // Cleanup is best-effort — the body has already been delivered,
+                // so failing to close the channel / SDK client cannot be surfaced
+                // to the caller.
                 .onClose(() -> {
-                    try { channel.close(); } catch (Exception ignored) {}
-                    try { storage.close(); } catch (Exception ignored) {}
+                    try {
+                        channel.close();
+                    } catch (Exception e) {
+                        log.debug("[GcsOrigin] ignored failure closing channel", e);
+                    }
+                    try {
+                        storage.close();
+                    } catch (Exception e) {
+                        log.debug("[GcsOrigin] ignored failure closing storage client", e);
+                    }
                 })
                 .build();
     }

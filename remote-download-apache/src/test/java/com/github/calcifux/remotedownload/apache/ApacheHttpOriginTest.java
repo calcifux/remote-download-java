@@ -40,7 +40,7 @@ class ApacheHttpOriginTest {
 
         WriteResult result = RemoteDownload.from(src).writeTo(out);
 
-        assertThat(out.toString()).isEqualTo("PDF bytes");
+        assertThat(out).hasToString("PDF bytes");
         assertThat(result.getBytesTransferred()).isEqualTo(9L);
     }
 
@@ -148,7 +148,7 @@ class ApacheHttpOriginTest {
         var out = new ByteArrayOutputStream();
         WriteResult result = RemoteDownload.from(src).writeTo(out);
 
-        assertThat(out.toString()).isEqualTo("recovered");
+        assertThat(out).hasToString("recovered");
         assertThat(result.getBytesTransferred()).isEqualTo(9L);
         // Two failures + one success = 3 total requests
         verify(moreThanOrExactly(3), getRequestedFor(urlEqualTo("/flaky")));
@@ -220,8 +220,8 @@ class ApacheHttpOriginTest {
 
     @Test
     void executesWithProxyConfigured() {
-        // Routes through an unreachable proxy — fails fast, but the
-        // `if (proxy != null)` branch in open() executes before the error.
+        // Routes through an unreachable proxy — fails fast, but the proxy
+        // guard inside open() executes before the error path is hit.
         var src = ApacheHttpOrigin.url("http://localhost:1/file")
                 .proxy("127.0.0.1", 1)
                 .retries(0)
@@ -234,10 +234,10 @@ class ApacheHttpOriginTest {
 
     @Test
     void executesWithNtlmCredentialsConfigured(WireMockRuntimeInfo info) throws Exception {
-        // WireMock does not speak NTLM; what we exercise is the
-        // `if (credentialsProvider != null)` branch — the credentials provider
-        // is wired into the client builder, the request is sent, the server
-        // returns 200 because it does not require auth.
+        // WireMock does not speak NTLM; what we exercise is the credentials
+        // provider guard inside open(). The provider is wired into the client
+        // builder, the request is sent, the server returns 200 because it
+        // does not require auth.
         stubFor(get("/file").willReturn(aResponse().withStatus(200).withBody("ok")));
 
         var src = ApacheHttpOrigin.url(info.getHttpBaseUrl() + "/file")
@@ -247,6 +247,6 @@ class ApacheHttpOriginTest {
         var out = new ByteArrayOutputStream();
         RemoteDownload.from(src).writeTo(out);
 
-        assertThat(out.toString()).isEqualTo("ok");
+        assertThat(out).hasToString("ok");
     }
 }

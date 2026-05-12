@@ -27,7 +27,7 @@ class DownloadsTest {
 
         var out = new ByteArrayOutputStream();
         response.getBody().writeTo(out);
-        assertThat(out.toString()).isEqualTo("hello world");
+        assertThat(out).hasToString("hello world");
     }
 
     @Test
@@ -41,7 +41,7 @@ class DownloadsTest {
 
         var out = new ByteArrayOutputStream();
         response.getBody().writeTo(out);
-        assertThat(out.toString()).isEqualTo("PDF bytes");
+        assertThat(out).hasToString("PDF bytes");
     }
 
     @Test
@@ -57,7 +57,7 @@ class DownloadsTest {
 
         var out = new ByteArrayOutputStream();
         response.getBody().writeTo(out);
-        assertThat(out.toString()).isEqualTo("raw stream");
+        assertThat(out).hasToString("raw stream");
     }
 
     @Test

@@ -8,12 +8,15 @@ import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.NTCredentials;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.util.TimeValue;
@@ -107,17 +110,27 @@ public class ApacheHttpOrigin implements DownloadOrigin {
     public RemoteContent open() throws IOException {
         log.debug("[ApacheHttpOrigin] GET {}", uri);
 
-        RequestConfig.Builder requestConfig = RequestConfig.custom()
-                .setConnectTimeout(connectTimeout)
-                .setResponseTimeout(responseTimeout);
-        if (proxy != null) {
-            requestConfig.setProxy(proxy);
-        }
+        // Connect timeout lives on the connection manager since HttpClient 5.4;
+        // response timeout remains on RequestConfig (per-request scope).
+        PoolingHttpClientConnectionManager connectionManager =
+                PoolingHttpClientConnectionManagerBuilder.create()
+                        .setDefaultConnectionConfig(ConnectionConfig.custom()
+                                .setConnectTimeout(connectTimeout)
+                                .build())
+                        .build();
+
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setResponseTimeout(responseTimeout)
+                .build();
 
         HttpClientBuilder clientBuilder = HttpClientBuilder.create()
-                .setDefaultRequestConfig(requestConfig.build())
+                .setConnectionManager(connectionManager)
+                .setDefaultRequestConfig(requestConfig)
                 .setRetryStrategy(new DefaultHttpRequestRetryStrategy(retries, retryInterval));
 
+        if (proxy != null) {
+            clientBuilder.setProxy(proxy);
+        }
         if (credentialsProvider != null) {
             clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
         }
@@ -126,9 +139,9 @@ public class ApacheHttpOrigin implements DownloadOrigin {
         HttpGet get = new HttpGet(uri);
         headers.forEach(get::addHeader);
 
-        CloseableHttpResponse response;
+        ClassicHttpResponse response;
         try {
-            response = client.execute(get);
+            response = client.executeOpen(null, get, null);
         } catch (IOException e) {
             client.close();
             throw e;
@@ -157,9 +170,19 @@ public class ApacheHttpOrigin implements DownloadOrigin {
 
         // When the caller closes the RemoteContent both the HTTP response and
         // the underlying client must be released to free pooled connections.
+        // Both closes are best-effort — a failure here cannot surface to the
+        // consumer because the body has already been delivered.
         Runnable cleanup = () -> {
-            try { response.close(); } catch (IOException ignored) {}
-            try { client.close(); } catch (IOException ignored) {}
+            try {
+                response.close();
+            } catch (IOException e) {
+                log.debug("[ApacheHttpOrigin] ignored failure closing response", e);
+            }
+            try {
+                client.close();
+            } catch (IOException e) {
+                log.debug("[ApacheHttpOrigin] ignored failure closing client", e);
+            }
         };
 
         return RemoteContent.builder()
@@ -223,6 +246,9 @@ public class ApacheHttpOrigin implements DownloadOrigin {
          * @param pass   password
          * @return this builder
          */
+        @SuppressWarnings("deprecation") // NTCredentials 5-arg ctor needs HC 5.4+; this
+                                          // module ships with 5.3.1. Tracked for the
+                                          // next dependency bump.
         public Builder ntlm(String domain, String user, String pass) {
             ensureCredentials();
             credentialsProvider.setCredentials(
@@ -305,7 +331,11 @@ public class ApacheHttpOrigin implements DownloadOrigin {
      * Recognizes both the legacy quoted form and the {@code RFC 5987} encoded
      * form ({@code filename*=UTF-8''...}).
      */
-    static class HttpHeaderUtils {
+    static final class HttpHeaderUtils {
+        private HttpHeaderUtils() {
+            // Utility class — no instances.
+        }
+
         static String parseFilename(String contentDisposition) {
             if (contentDisposition == null) return null;
             int idx = contentDisposition.toLowerCase().indexOf("filename");

@@ -20,15 +20,16 @@ class DownloadsTest {
         Response response = Downloads.attachment(src, "report.pdf");
 
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getMediaType().toString()).isEqualTo(MediaType.APPLICATION_OCTET_STREAM);
+        assertThat(response.getMediaType()).hasToString(MediaType.APPLICATION_OCTET_STREAM);
         String disposition = response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION);
-        assertThat(disposition).startsWith("attachment;");
-        assertThat(disposition).contains("filename=\"report.pdf\"");
-        assertThat(disposition).contains("filename*=UTF-8''report.pdf");
+        assertThat(disposition)
+                .startsWith("attachment;")
+                .contains("filename=\"report.pdf\"")
+                .contains("filename*=UTF-8''report.pdf");
 
         var out = new ByteArrayOutputStream();
         ((StreamingOutput) response.getEntity()).write(out);
-        assertThat(out.toString()).isEqualTo("hello world");
+        assertThat(out).hasToString("hello world");
     }
 
     @Test
@@ -38,12 +39,13 @@ class DownloadsTest {
         Response response = Downloads.inline(src, "preview.pdf");
 
         String disposition = response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION);
-        assertThat(disposition).startsWith("inline;");
-        assertThat(disposition).contains("filename=\"preview.pdf\"");
+        assertThat(disposition)
+                .startsWith("inline;")
+                .contains("filename=\"preview.pdf\"");
 
         var out = new ByteArrayOutputStream();
         ((StreamingOutput) response.getEntity()).write(out);
-        assertThat(out.toString()).isEqualTo("PDF bytes");
+        assertThat(out).hasToString("PDF bytes");
     }
 
     @Test
@@ -53,11 +55,11 @@ class DownloadsTest {
         Response response = Downloads.stream(src);
 
         assertThat(response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION)).isNull();
-        assertThat(response.getMediaType().toString()).isEqualTo(MediaType.APPLICATION_OCTET_STREAM);
+        assertThat(response.getMediaType()).hasToString(MediaType.APPLICATION_OCTET_STREAM);
 
         var out = new ByteArrayOutputStream();
         ((StreamingOutput) response.getEntity()).write(out);
-        assertThat(out.toString()).isEqualTo("raw stream");
+        assertThat(out).hasToString("raw stream");
     }
 
     @Test
@@ -68,8 +70,9 @@ class DownloadsTest {
         Response response = Downloads.attachment(src, "reporte año.pdf");
 
         String disposition = response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION);
-        assertThat(disposition).contains("filename=\"reporte año.pdf\"");
-        assertThat(disposition).contains("filename*=UTF-8''reporte%20a%C3%B1o.pdf");
+        assertThat(disposition)
+                .contains("filename=\"reporte año.pdf\"")
+                .contains("filename*=UTF-8''reporte%20a%C3%B1o.pdf");
     }
 
     @Test

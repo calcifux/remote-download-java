@@ -36,14 +36,15 @@ class RemoteDownloadJaxRsServiceTest {
         Response response = service.attachment(src, "report.pdf");
 
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getMediaType().toString()).isEqualTo(MediaType.APPLICATION_OCTET_STREAM);
+        assertThat(response.getMediaType()).hasToString(MediaType.APPLICATION_OCTET_STREAM);
         String disposition = response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION);
-        assertThat(disposition).startsWith("attachment;");
-        assertThat(disposition).contains("filename=\"report.pdf\"");
+        assertThat(disposition)
+                .startsWith("attachment;")
+                .contains("filename=\"report.pdf\"");
 
         var out = new ByteArrayOutputStream();
         ((StreamingOutput) response.getEntity()).write(out);
-        assertThat(out.toString()).isEqualTo("hello world");
+        assertThat(out).hasToString("hello world");
     }
 
     @Test
@@ -53,12 +54,13 @@ class RemoteDownloadJaxRsServiceTest {
         Response response = service.inline(src, "preview.pdf");
 
         String disposition = response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION);
-        assertThat(disposition).startsWith("inline;");
-        assertThat(disposition).contains("filename=\"preview.pdf\"");
+        assertThat(disposition)
+                .startsWith("inline;")
+                .contains("filename=\"preview.pdf\"");
 
         var out = new ByteArrayOutputStream();
         ((StreamingOutput) response.getEntity()).write(out);
-        assertThat(out.toString()).isEqualTo("PDF bytes");
+        assertThat(out).hasToString("PDF bytes");
     }
 
     @Test
@@ -68,11 +70,11 @@ class RemoteDownloadJaxRsServiceTest {
         Response response = service.stream(src);
 
         assertThat(response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION)).isNull();
-        assertThat(response.getMediaType().toString()).isEqualTo(MediaType.APPLICATION_OCTET_STREAM);
+        assertThat(response.getMediaType()).hasToString(MediaType.APPLICATION_OCTET_STREAM);
 
         var out = new ByteArrayOutputStream();
         ((StreamingOutput) response.getEntity()).write(out);
-        assertThat(out.toString()).isEqualTo("forwarded bytes");
+        assertThat(out).hasToString("forwarded bytes");
     }
 
     @Test
@@ -82,8 +84,9 @@ class RemoteDownloadJaxRsServiceTest {
         Response response = service.attachment(src, "informe año.pdf");
 
         String disposition = response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION);
-        assertThat(disposition).contains("filename=\"informe año.pdf\"");
-        assertThat(disposition).contains("filename*=UTF-8''informe%20a%C3%B1o.pdf");
+        assertThat(disposition)
+                .contains("filename=\"informe año.pdf\"")
+                .contains("filename*=UTF-8''informe%20a%C3%B1o.pdf");
     }
 
     @Test
@@ -94,7 +97,7 @@ class RemoteDownloadJaxRsServiceTest {
 
         WriteResult result = service.writeTo(src, out);
 
-        assertThat(out.toString()).isEqualTo("checksum me");
+        assertThat(out).hasToString("checksum me");
         assertThat(result.getBytesTransferred()).isEqualTo(11L);
     }
 

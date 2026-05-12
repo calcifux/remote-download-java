@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class RemoteContentTest {
@@ -53,7 +54,7 @@ class RemoteContentTest {
     }
 
     @Test
-    void closeSwallowsExceptionsFromOnCloseHook() throws Exception {
+    void closeSwallowsExceptionsFromOnCloseHook() {
         // Contract: the primary stream close already succeeded; the hook is
         // best-effort cleanup, so its failure must not surface to the caller.
         var content = RemoteContent.builder()
@@ -61,8 +62,7 @@ class RemoteContentTest {
                 .onClose(() -> { throw new RuntimeException("cleanup-failed"); })
                 .build();
 
-        // Should not throw.
-        content.close();
+        assertThatNoException().isThrownBy(content::close);
     }
 
     @Test

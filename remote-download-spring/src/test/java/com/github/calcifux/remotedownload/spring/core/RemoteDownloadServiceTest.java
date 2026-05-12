@@ -41,7 +41,7 @@ class RemoteDownloadServiceTest {
 
         var out = new ByteArrayOutputStream();
         response.getBody().writeTo(out);
-        assertThat(out.toString()).isEqualTo("hello world");
+        assertThat(out).hasToString("hello world");
     }
 
     @Test
@@ -55,7 +55,7 @@ class RemoteDownloadServiceTest {
 
         var out = new ByteArrayOutputStream();
         response.getBody().writeTo(out);
-        assertThat(out.toString()).isEqualTo("PDF bytes");
+        assertThat(out).hasToString("PDF bytes");
     }
 
     @Test
@@ -69,7 +69,7 @@ class RemoteDownloadServiceTest {
 
         var out = new ByteArrayOutputStream();
         response.getBody().writeTo(out);
-        assertThat(out.toString()).isEqualTo("forwarded bytes");
+        assertThat(out).hasToString("forwarded bytes");
     }
 
     @Test
@@ -91,7 +91,7 @@ class RemoteDownloadServiceTest {
 
         WriteResult result = service.writeTo(src, out);
 
-        assertThat(out.toString()).isEqualTo("checksum me");
+        assertThat(out).hasToString("checksum me");
         assertThat(result.getBytesTransferred()).isEqualTo(11L);
     }
 }

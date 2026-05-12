@@ -100,7 +100,7 @@ public class RemoteDownloadService {
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .contentType(resolveContentType(source))
+                .contentType(defaultContentType())
                 .body(body);
     }
 
@@ -110,7 +110,7 @@ public class RemoteDownloadService {
      * to peek at metadata; downstream callers can override the type when they
      * already know it.
      */
-    private MediaType resolveContentType(DownloadOrigin source) {
+    private static MediaType defaultContentType() {
         return MediaType.APPLICATION_OCTET_STREAM;
     }
 

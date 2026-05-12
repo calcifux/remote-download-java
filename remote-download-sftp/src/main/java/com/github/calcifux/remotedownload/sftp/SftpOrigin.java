@@ -114,7 +114,11 @@ public class SftpOrigin implements DownloadOrigin {
             sftp = SftpClientFactory.instance().createSftpClient(session);
             stream = sftp.read(path);
         } catch (Exception e) {
-            try { client.stop(); } catch (Exception ignored) {}
+            try {
+                client.stop();
+            } catch (Exception stopEx) {
+                log.debug("[SftpOrigin] ignored failure stopping client after open() failed", stopEx);
+            }
             throw new RemoteDownloadException(
                     "SFTP error opening sftp://" + host + ":" + port + path, e);
         }
@@ -123,10 +127,24 @@ public class SftpOrigin implements DownloadOrigin {
         final SftpClient sftpRef = sftp;
         final ClientSession sessionRef = session;
 
+        // Cleanup is best-effort — the body has already been delivered, so a
+        // failure to tear down the SSH session cannot be surfaced to the caller.
         Runnable cleanup = () -> {
-            try { sftpRef.close(); } catch (Exception ignored) {}
-            try { sessionRef.close(); } catch (Exception ignored) {}
-            try { client.stop(); } catch (Exception ignored) {}
+            try {
+                sftpRef.close();
+            } catch (Exception e) {
+                log.debug("[SftpOrigin] ignored failure closing SFTP client", e);
+            }
+            try {
+                sessionRef.close();
+            } catch (Exception e) {
+                log.debug("[SftpOrigin] ignored failure closing SSH session", e);
+            }
+            try {
+                client.stop();
+            } catch (Exception e) {
+                log.debug("[SftpOrigin] ignored failure stopping SSH client", e);
+            }
         };
 
         return RemoteContent.builder()

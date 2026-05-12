@@ -31,7 +31,7 @@ class RemoteDownloadRequestTest {
 
         request.writeTo(out);
 
-        assertThat(out.toString()).isEqualTo("hello");
+        assertThat(out).hasToString("hello");
     }
 
     @Test
